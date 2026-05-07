@@ -8,11 +8,17 @@ import { initInventory, renderInventoryTable, saveProductFromModal, clearInvento
 import { initPOS, renderPosProducts, finalizeSale, printTicket, updateChange } from './pos.js';
 import { initDashboard, handleRegisterMerma, generateAccountingReport, changeHistPage, openCorteHandler, handleSaveCorte, updateCorteDiffUI } from './dashboard.js';
 import { autoBackupToCloud, connectGoogleDrive, initGoogleDrive } from './backup_manager.js';
+import { checkLicense } from './license.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         await requestPersistentStorage();
         await openDB();
+        
+        // --- 1. VALIDACIÓN DE LICENCIA (HWID) ---
+        const isLicensed = await checkLicense();
+        if (!isLicensed) return; // Detener todo si no hay licencia
+
         await refreshStore();
         await initGoogleDrive();
         

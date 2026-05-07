@@ -2,3 +2,7 @@ node_modules/
 dist/
 .env
 *.log
+
+# NUNCA SUBIR EL PANEL DE LICENCIAS A GITHUB
+zeus_admin_licencias.html
+keygen.js

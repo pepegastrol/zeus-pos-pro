@@ -3,15 +3,22 @@
   "version": "1.0.0",
   "description": "Zeus POS Pro Offline",
   "main": "main.js",
-
   "scripts": {
     "start": "electron .",
     "obfuscate": "node obfuscate.js",
     "build": "electron-builder -w"
   },
+  "repository": "github:pepegastrol/zeus-pos-pro",
   "build": {
     "appId": "com.zeuspos.pro",
     "productName": "Zeus POS Pro",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "pepegastrol",
+        "repo": "zeus-pos-pro"
+      }
+    ],
     "win": {
       "target": "nsis",
       "icon": "icon.ico"
@@ -25,5 +32,9 @@
     "electron": "^42.0.0",
     "electron-builder": "^26.8.1",
     "javascript-obfuscator": "^5.4.2"
+  },
+  "dependencies": {
+    "electron-is-dev": "^3.0.1",
+    "electron-updater": "^6.8.3"
   }
 }

@@ -60,6 +60,18 @@
             <button id="configDriveBtn" class="btn-soft" style="margin-top: 10px; width: 100%; font-size: 0.75rem;">
                 <i class="fas fa-cloud-upload-alt"></i> Configurar Google Drive
             </button>
+
+            <!-- Sello de Derechos de Autor -->
+            <div style="margin-top: 15px; text-align: center; border-top: 1px dashed var(--border); padding-top: 15px; user-select: none;">
+                <div style="font-size: 0.85rem; font-weight: 900; color: var(--text); letter-spacing: 1.5px; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                    <i class="fas fa-bolt" style="color: #c28a5c;"></i> ZEUS POS PRO
+                </div>
+                <div style="font-size: 0.75rem; color: #a48c76; font-weight: 600; margin-top: 4px;">Versión 1.0.0</div>
+                <div style="font-size: 0.65rem; color: #a48c76; margin-top: 4px;">&copy; 2026 Todos los derechos reservados</div>
+                <div style="font-size: 0.65rem; color: #2a7d2e; font-weight: bold; margin-top: 8px; display: inline-block; background: #e1f5e3; padding: 4px 10px; border-radius: 20px; box-shadow: 0 2px 5px rgba(42,125,46,0.1);">
+                    <i class="fas fa-shield-check"></i> Software Original Registrado
+                </div>
+            </div>
         </aside>
 
         <!-- CONTENIDO PRINCIPAL -->
@@ -461,6 +473,33 @@
         </div>
     </div>
 
+    <!-- MODAL DE ACTIVACIÓN DE LICENCIA (HWID) -->
+    <div id="activationModal" style="display: none; z-index: 9999; background: url('assets/login-bg.png') no-repeat center center/cover; position: fixed; top: 0; left: 0; width: 100%; height: 100%;" class="modal">
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);"></div>
+        
+        <div class="modal-card" style="position: relative; z-index: 1; max-width: 500px; text-align: center; border-radius: 20px; background: rgba(30, 29, 26, 0.95); box-shadow: 0 0 50px rgba(194, 138, 92, 0.3); padding: 3rem; border: 2px solid #c28a5c;">
+            
+            <i class="fas fa-lock" style="font-size: 3rem; color: #c28a5c; margin-bottom: 15px;"></i>
+            <h2 style="color: #ebd8c8; margin-bottom: 5px; font-size: 1.8rem; letter-spacing: 1px;">SISTEMA BLOQUEADO</h2>
+            <p style="color: #a48c76; font-size: 0.9rem; margin-bottom: 25px;">Se requiere una licencia válida para ejecutar ZEUS POS PRO en este equipo.</p>
+            
+            <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #4a3b2c;">
+                <p style="color: #8c7a6b; font-size: 0.8rem; margin: 0 0 5px 0;">TU CÓDIGO DE MÁQUINA (HWID):</p>
+                <h3 id="hwidDisplay" style="color: #e1f5e3; font-family: monospace; font-size: 1.5rem; margin: 0; letter-spacing: 2px; user-select: all;">CARGANDO...</h3>
+                <p style="color: #8c7a6b; font-size: 0.75rem; margin: 5px 0 0 0;">Envía este código al proveedor para adquirir tu licencia.</p>
+            </div>
+
+            <label style="color: #ebd8c8; font-weight: bold; display: block; margin-bottom: 8px; text-align: left; font-size: 0.9rem;">CLAVE DE ACTIVACIÓN:</label>
+            <input type="text" id="licenseInput" placeholder="XXXX-XXXX-XXXX-XXXX" style="width: 100%; padding: 15px; font-size: 1.2rem; text-align: center; background: #2d2b26; border: 2px solid #5c412d; color: white; border-radius: 12px; margin-bottom: 15px; font-family: monospace; letter-spacing: 2px; outline: none;">
+            
+            <div id="licenseErrorMsg" style="color: #ffcccc; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; display: none;">Licencia Inválida. Verifique el código.</div>
+            
+            <button id="activateLicenseBtn" class="btn-primary" style="width: 100%; padding: 16px; font-size: 1.1rem; font-weight: bold; background: linear-gradient(135deg, #c28a5c, #8c7a6b); color: white; border: none; border-radius: 12px; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(194, 138, 92, 0.4);">
+                <i class="fas fa-key"></i> ACTIVAR SISTEMA
+            </button>
+        </div>
+    </div>
+
     <!-- MODAL DE LOGIN (USUARIO/CONTRASEÑA) -->
     <div id="loginModal" style="display: none; z-index: 5000; background: url('assets/login-bg.png') no-repeat center center/cover; position: fixed;" class="modal">
         <!-- Overlay oscuro para que el modal resalte -->
@@ -488,6 +527,15 @@
             <div id="loginErrorMessage" style="color: #c2470f; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; display: none; background: #fde2cf; padding: 10px; border-radius: 8px;">Credenciales incorrectas, intente de nuevo.</div>
             
             <button id="loginSubmitBtn" class="btn-primary" style="width: 100%; padding: 16px; font-size: 1.2rem; font-weight: 700; border-radius: 16px; background: linear-gradient(135deg, #c28a5c, #8c7a6b); color: white; box-shadow: 0 8px 20px rgba(194, 138, 92, 0.3); border: none; cursor: pointer; transition: transform 0.2s;">Ingresar al Sistema</button>
+
+            <!-- Sello de Software Registrado Login -->
+            <div style="margin-top: 30px; font-size: 0.7rem; color: #8c7a6b; line-height: 1.5;">
+                <strong style="color: #4a3b2c;">ZEUS POS PRO v1.0.0</strong><br>
+                &copy; 2026 Todos los derechos reservados.<br>
+                <div style="display: inline-block; margin-top: 5px; background: #f9f5f0; padding: 4px 10px; border-radius: 20px; border: 1px solid #ebd8c8;">
+                    <i class="fas fa-certificate" style="color: #c28a5c;"></i> Licencia Comercial Autorizada
+                </div>
+            </div>
         </div>
     </div>
 
