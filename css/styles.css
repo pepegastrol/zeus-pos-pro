@@ -1,0 +1,440 @@
+/* ==========================================================================
+   ZEUS POS - Sistema de Diseño Premium
+   ========================================================================== */
+
+:root {
+    /* Tema Claro (Default) */
+    --bg-app: linear-gradient(145deg, #f3f0eb 0%, #e9e4dd 100%);
+    --bg-sidebar: rgba(255, 255, 245, 0.92);
+    --bg-card: rgba(255, 255, 250, 0.85);
+    --text-main: #2d2b26;
+    --text-muted: #a48c76;
+    --accent: #c28a5c;
+    --accent-soft: #fff4eb;
+    --border: #f0e3d8;
+    --shadow: rgba(0, 0, 0, 0.08);
+    --input-bg: #fffbf7;
+}
+
+[data-theme="dark"] {
+    /* Tema Oscuro */
+    --bg-app: linear-gradient(145deg, #1a1917 0%, #2d2b26 100%);
+    --bg-sidebar: rgba(45, 43, 38, 0.95);
+    --bg-card: rgba(60, 58, 54, 0.9);
+    --text-main: #f3f0eb;
+    --text-muted: #b8ac9e;
+    --accent: #e2b48c;
+    --accent-soft: #4a3b2c;
+    --border: #4a3b2c;
+    --shadow: rgba(0, 0, 0, 0.4);
+    --input-bg: #2d2b26;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+body {
+    background: var(--bg-app);
+    color: var(--text-main);
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Layout principal FULLSCREEN */
+.zeus-app {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* SIDEBAR PASTEL MODERNO */
+.sidebar {
+    width: 280px;
+    background: var(--bg-sidebar);
+    backdrop-filter: blur(10px);
+    border-radius: 0 32px 32px 0;
+    box-shadow: 8px 0 30px rgba(0, 0, 0, 0.05);
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    border-right: 1px solid var(--border);
+}
+
+.logo-area h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #bb9b7a, #7c6e5d);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: -0.5px;
+}
+
+.logo-area p {
+    font-size: 0.7rem;
+    color: #a48c76;
+}
+
+.nav-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.tab-link {
+    background: transparent;
+    border: none;
+    padding: 0.9rem 1.2rem;
+    text-align: left;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 40px;
+    color: #5d4b3a;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.tab-link i {
+    width: 24px;
+    font-size: 1.2rem;
+}
+
+.tab-link.active {
+    background: #fff4eb;
+    color: #c28a5c;
+    box-shadow: 0 8px 18px rgba(184, 140, 100, 0.15);
+    border-left: 4px solid #e2b48c;
+}
+
+.business-badge {
+    margin-top: auto;
+    background: #e7dfd7;
+    border-radius: 40px;
+    padding: 12px;
+    text-align: center;
+    font-weight: 500;
+    font-size: 0.8rem;
+    color: #785a42;
+}
+
+/* MAIN CONTENT */
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2rem;
+    scroll-behavior: smooth;
+}
+
+/* Tarjetas estilo pastel premium */
+.card-premium {
+    background: var(--bg-card);
+    backdrop-filter: blur(10px);
+    border-radius: 32px;
+    padding: 1.5rem;
+    margin-bottom: 1.8rem;
+    box-shadow: 0 12px 28px -8px var(--shadow);
+    border: 1px solid var(--border);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-premium:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 22px 35px -12px rgba(90, 60, 40, 0.12);
+}
+
+.grid-2col {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Tablas */
+.table-responsive {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+    padding: 1rem 0.8rem;
+    background-color: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--accent);
+}
+th:first-child {
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+th:last-child {
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+td {
+    text-align: left;
+    padding: 0.9rem 0.8rem;
+    border-bottom: 1px dashed var(--border);
+}
+
+.badge-stock-low {
+    background: #fde2cf;
+    color: #c2470f;
+    border-radius: 40px;
+    padding: 4px 12px;
+    font-weight: 600;
+    font-size: 0.7rem;
+}
+
+button, .btn-soft {
+    border: none;
+    background: #e9dfd5;
+    padding: 0.5rem 1.2rem;
+    border-radius: 60px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.15s;
+}
+
+.btn-primary {
+    background: #c9b69c;
+    color: #2d2b26;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.btn-danger {
+    background: #f3cfc3;
+    color: #aa4e2c;
+}
+
+/* POS Específico */
+.product-grid-item {
+    background: #fffcf8;
+    border: 1px solid #ebd8c8;
+    border-radius: 16px;
+    padding: 18px 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 130px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+}
+
+.product-grid-item:hover {
+    transform: translateY(-3px);
+    border-color: #aa4e2c;
+    box-shadow: 0 6px 15px rgba(170, 78, 44, 0.15);
+}
+
+.product-grid-item h4 {
+    margin: 0 0 10px 0;
+    font-size: 1.05rem;
+    color: #2d2b26;
+    line-height: 1.3;
+    font-weight: 700;
+}
+
+.product-grid-item .price {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #6c9a63;
+}
+
+.product-grid-item .stock {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 6px;
+}
+
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #edd9cb;
+}
+
+input, select {
+    background: #fffbf7;
+    border: 1px solid #ecdacf;
+    border-radius: 60px;
+    padding: 0.6rem 1rem;
+    width: 100%;
+    outline: none;
+}
+
+/* Modales */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modal-card {
+    background: #fffcf8;
+    border-radius: 48px;
+    max-width: 700px;
+    width: 90%;
+    padding: 2.5rem;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+
+@keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.tab-pane {
+    display: none;
+    animation: fadeSlide 0.25s ease;
+}
+
+.tab-pane.active-pane {
+    display: block;
+}
+
+.chart-container {
+    position: relative;
+    height: 260px;
+    margin-top: 0.5rem;
+}
+
+.wizard-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+.wizard-table th, .wizard-table td {
+    border: 1px solid #ecdacf;
+    padding: 10px;
+    text-align: left;
+}
+
+/* Tickets (extraído de temp_check) */
+.ticket-print {
+    font-family: 'Courier New', Courier, monospace;
+    width: 300px;
+    padding: 10px;
+    background: white;
+    color: black;
+}
+
+/* Nuevas Utilidades Zeus v2.0 */
+.category-badge-small {
+    background: #fdfaf6;
+    border: 1px solid #ebd8c8;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    color: #8c7a6b;
+}
+
+.stock-alert-chip {
+    background: #fff;
+    border: 1px solid #f3cfc3;
+    padding: 8px 15px;
+    border-radius: 40px;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.category-chip {
+    background: #fff;
+    border: 1px solid #c28a5c;
+    color: #c28a5c;
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.category-chip:hover {
+    background: #c28a5c;
+    color: #white;
+}
+
+/* Estilos de Impresión Térmica */
+@media print {
+    body * { visibility: hidden; }
+    .ticket-print, .ticket-print * { visibility: visible; }
+    .ticket-print {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 80mm; /* Adaptable a 58mm si se reduce */
+        font-size: 12px;
+        line-height: 1.2;
+    }
+    @page { margin: 0; }
+}
+
+/* Switch de Modo Oscuro */
+.theme-switch {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 14px; width: 14px;
+    left: 3px; bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+input:checked + .slider { background-color: var(--accent); }
+input:checked + .slider:before { transform: translateX(20px); }

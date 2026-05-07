@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Zeus POS Pro | Inventario + Ventas</title>
+    
+    <!-- Zeus Libraries (Offline Ready) -->
+    <script src="lib/chart.umd.min.js"></script>
+    <script src="lib/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="lib/font-awesome/all.min.css">
+    
+    <!-- Zeus Styles -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="icon" href="data:,">
+
+    <!-- Google API Client & Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://apis.google.com/js/api.js" async defer></script>
+</head>
+
+<body>
+    <div class="zeus-app">
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <h1>⚡ ZEUS</h1>
+                <p>POS + Ventas + Respaldo</p>
+            </div>
+            <div class="nav-tabs">
+                <button class="tab-link active" data-section="dashboard">
+                    <i class="fas fa-chart-line"></i> Dashboard & Finanzas
+                </button>
+                <button class="tab-link" data-section="cashier">
+                    <i class="fas fa-cash-register"></i> Punto de Venta
+                </button>
+                <button class="tab-link" data-section="inventory">
+                    <i class="fas fa-boxes"></i> Inventario
+                </button>
+                <button class="tab-link" data-section="settings">
+                    <i class="fas fa-cog"></i> Configuración
+                </button>
+            </div>
+            <div class="business-badge" id="businessDisplay">⚙️ Negocio: --</div>
+
+            <div class="theme-switch">
+                <i class="fas fa-moon"></i>
+                <span>Modo Oscuro</span>
+                <label class="switch">
+                    <input type="checkbox" id="themeToggle">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <button id="logoutBtn" class="btn-soft" style="margin-top: 10px; width: 100%; font-size: 0.85rem; color: #c2470f; border-color: #f3cfc3; background-color: #fff5f2;">
+                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+            </button>
+            
+            <button id="configDriveBtn" class="btn-soft" style="margin-top: 10px; width: 100%; font-size: 0.75rem;">
+                <i class="fas fa-cloud-upload-alt"></i> Configurar Google Drive
+            </button>
+        </aside>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="main-content">
+            
+            <!-- PANEL INVENTARIO -->
+            <div id="inventoryPanel" class="tab-pane">
+                <div class="card-premium">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <h2><i class="fas fa-archive"></i> Gestión de Productos</h2>
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <div style="position: relative;">
+                                <i class="fas fa-search" style="position: absolute; left: 12px; top: 10px; color: #a48c76; font-size: 0.8rem;"></i>
+                                <input type="text" id="invSearch" placeholder="Buscar en inventario..." style="padding-left: 35px; width: 200px; font-size: 0.85rem;">
+                            </div>
+                            <button id="importExcelBtn" class="btn-primary"><i class="fas fa-file-excel"></i> Importar Excel</button>
+                            <button class="btn-primary" id="exportBackupBtn"><i class="fas fa-download"></i> Respaldo JSON</button>
+                            <button class="btn-primary btn-danger" id="clearInvBtn"><i class="fas fa-trash-alt"></i> Vaciar</button>
+                            <button class="btn-primary" id="newProdBtn"><i class="fas fa-plus"></i> Nuevo producto</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive" style="margin-top: 1rem;">
+                        <table id="inventoryTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Categoría</th>
+                                    <th>Precio</th>
+                                    <th>Stock</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventoryTbody"></tbody>
+                        </table>
+                        <div id="inventoryPageInfo" style="margin-top: 10px; font-size: 0.85rem; color: #a48c76;"></div>
+                        
+                        <!-- Controles de Paginación Inventario -->
+                        <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 15px;">
+                            <button id="invPrevBtn" class="btn-soft">←</button>
+                            <span id="invPageDisplay" style="font-weight: bold; color: #a48c76;">1</span>
+                            <button id="invNextBtn" class="btn-soft">→</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL CAJA (POS) -->
+            <div id="cashierPanel" class="tab-pane">
+                <div class="grid-2col" style="grid-template-columns: 1.5fr 1fr;">
+                    <div class="card-premium">
+                        <h3><i class="fas fa-box-open"></i> Catálogo</h3>
+                        <div style="position: relative; margin: 15px 0;">
+                            <i class="fas fa-search" style="position: absolute; left: 15px; top: 12px; color: #aa4e2c;"></i>
+                            <input type="text" id="posSearch" placeholder="Buscar producto..." style="padding-left: 40px;">
+                        </div>
+                        <div id="posProductsList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; max-height: 500px; overflow-y: auto;"></div>
+                    </div>
+                    
+                    <div class="card-premium">
+                        <h3><i class="fas fa-shopping-cart"></i> Carrito</h3>
+                        
+                        <!-- ZEUS Copilot: Cross-Selling Engine -->
+                        <div id="zeusCopilotBox" style="display: none; background: linear-gradient(135deg, #1e1d1a, #2d2b26); padding: 12px 15px; border-radius: 12px; margin-top: 10px; border-left: 4px solid #c28a5c; box-shadow: 0 4px 15px rgba(0,0,0,0.1); animation: fadeSlide 0.3s ease; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(194, 138, 92, 0.2)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.1)';">
+                            <div style="font-size: 0.75rem; color: #c28a5c; font-weight: bold; letter-spacing: 1px; margin-bottom: 4px; display: flex; justify-content: space-between;">
+                                <span><i class="fas fa-magic"></i> ZEUS COPILOT SUGIERE</span>
+                                <span style="font-size: 0.7rem; color: #888;">Clica para agregar</span>
+                            </div>
+                            <div id="zeusCopilotMessage" style="font-size: 0.9rem; color: #ebd8c8; font-weight: 500;"></div>
+                        </div>
+
+                        <div id="cartContainer" style="min-height: 200px; margin-top: 15px;"></div>
+                        <div style="display: flex; justify-content: space-between; margin: 1.5rem 0; font-size: 1.4rem;">
+                            <strong>Total:</strong> <span id="cartTotalAmount" style="font-weight: 800; color: #2d2b26;">$0.00</span>
+                        </div>
+                        
+                        <div style="background: #e8dfd6; padding: 15px; border-radius: 16px;">
+                            <label style="font-weight: bold; display: block; margin-bottom: 5px;">💵 Efectivo Recibido:</label>
+                            <input type="number" id="cashGiven" placeholder="0.00" style="font-size: 1.3rem; font-weight: bold;">
+                            <div style="display: flex; justify-content: space-between; margin-top: 15px; align-items: center;">
+                                <span>🔄 Cambio:</span>
+                                <strong id="changeDue" style="font-size: 1.5rem; color: #aa4e2c;">$0.00</strong>
+                            </div>
+                        </div>
+
+                        <button id="finalizeSaleBtn" class="btn-primary" style="width:100%; margin-top: 1.5rem; padding: 18px; font-size: 1.2rem;">
+                            <i class="fas fa-check-circle"></i> Completar Venta
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Historial de Ventas Rápidas -->
+                <div class="card-premium" style="margin-top: 1.5rem; background: linear-gradient(to right, #ffffff, #f9f5f0);">
+                    <h3 style="margin-bottom: 10px;"><i class="fas fa-receipt" style="color: #2a7d2e;"></i> Últimas Ventas (Historial en vivo)</h3>
+                    <p style="font-size: 0.8rem; color: #888; margin-bottom: 15px;">Tus últimos cobros aparecerán aquí de forma automática.</p>
+                    <div id="posRecentSalesContainer" style="display: flex; overflow-x: auto; gap: 15px; padding: 10px 0; scroll-behavior: smooth;">
+                        <!-- Cards inyectadas vía JS -->
+                        <div style="font-size: 0.85rem; color: #a48c76; padding: 20px;">No hay ventas recientes en esta sesión.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL DASHBOARD -->
+            <div id="dashboardPanel" class="tab-pane active-pane">
+                <!-- Botonera Principal -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0;"><i class="fas fa-chart-line"></i> Resumen del Negocio</h2>
+                    <button id="openReportModalBtn" class="btn-primary"><i class="fas fa-file-invoice-dollar"></i> Reporte Contable</button>
+                </div>
+
+                <!-- Alertas Urgentes -->
+                <div id="stockAlertContainer" class="card-premium" style="display: none; border: 1px solid #f3cfc3; background: #fff5f2;">
+                    <h3 style="color: #aa4e2c;"><i class="fas fa-exclamation-triangle"></i> ¡Atención! Stock Bajo</h3>
+                    <div id="lowStockList" style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px;"></div>
+                </div>
+
+                <div class="grid-2col" style="margin-top: 1.5rem;">
+                    <!-- Resumen Financiero -->
+                    <div class="card-premium" style="background: linear-gradient(135deg, #2d2b26, #5c412d); color: white; border-radius: 20px; box-shadow: 0 8px 20px rgba(45, 43, 38, 0.3); padding: 25px;">
+                        <h3 style="color: #e8dfd6; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 12px; margin-bottom: 20px; font-size: 1.2rem;"><i class="fas fa-wallet" style="margin-right: 8px;"></i> Balance de Caja (Hoy)</h3>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="opacity: 0.85; font-size: 0.95rem;"><i class="fas fa-arrow-trend-up"></i> Ingresos Brutos</span>
+                                <strong id="totalSalesValue" style="font-size: 1.2rem; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">$0.00</strong>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="opacity: 0.85; color: #ffcccc; font-size: 0.95rem;"><i class="fas fa-arrow-trend-down"></i> Costo de Mermas</span>
+                                <strong id="totalMermasValue" style="font-size: 1.2rem; color: #ffcccc; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">$0.00</strong>
+                            </div>
+                            
+                            <div style="border-top: 1px dashed rgba(255,255,255,0.4); margin: 5px 0;"></div>
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-weight: bold; font-size: 1.1rem;"><i class="fas fa-sack-dollar"></i> Flujo Neto Estimado</span>
+                                <strong id="netEarningsValue" style="font-size: 2rem; text-shadow: 0 2px 4px rgba(0,0,0,0.3);">$0.00</strong>
+                            </div>
+                        </div>
+
+                        <button id="openCorteBtn" class="btn-primary" style="width: 100%; margin-top: 25px; background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(5px); padding: 15px; border-radius: 12px; font-size: 1.1rem; transition: background 0.3s;">
+                            <i class="fas fa-vault"></i> Realizar Corte de Caja
+                        </button>
+                    </div>
+
+                    <!-- Registro de Mermas -->
+                    <div class="card-premium" style="background: linear-gradient(145deg, #fff5f2, #fdfaf6); border: 1px solid #f3cfc3; position: relative; overflow: hidden; box-shadow: 0 8px 20px rgba(194, 71, 15, 0.08);">
+                        <div style="position: absolute; top: -15px; right: -15px; opacity: 0.05; font-size: 8rem; color: #c2470f;"><i class="fas fa-box-open"></i></div>
+                        
+                        <h3 style="color: #c2470f; font-size: 1.2rem; margin-bottom: 5px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fas fa-triangle-exclamation" style="font-size: 1.4rem;"></i> Registrar Merma
+                        </h3>
+                        <p style="font-size: 0.85rem; color: #aa4e2c; margin-bottom: 20px; font-weight: 500;">Da de baja productos dañados, caducados o perdidos.</p>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 15px; position: relative; z-index: 1;">
+                            <div>
+                                <label style="font-size: 0.8rem; font-weight: bold; color: #c2470f; margin-bottom: 5px; display: block;"><i class="fas fa-search" style="opacity: 0.7;"></i> Buscar Producto</label>
+                                <select id="mermaProductSelect" style="width: 100%; padding: 12px; border: 1px solid #f3cfc3; border-radius: 12px; font-size: 0.95rem; background: white; color: #5c412d; outline: none; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);"></select>
+                            </div>
+                            
+                            <div>
+                                <label style="font-size: 0.8rem; font-weight: bold; color: #c2470f; margin-bottom: 5px; display: block;"><i class="fas fa-minus-circle" style="opacity: 0.7;"></i> Cantidad a Descontar</label>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="number" id="mermaQty" placeholder="Ej. 1" min="0.01" step="0.01" style="flex: 1.5; padding: 12px; border: 1px solid #f3cfc3; border-radius: 12px; font-size: 1.1rem; font-weight: bold; color: #c2470f; background: white; text-align: center; outline: none;">
+                                    <button id="registerMermaBtn" class="btn-danger" style="flex: 1; font-size: 0.95rem; font-weight: bold; background: #c2470f; color: white; border-radius: 12px; border: none; box-shadow: 0 4px 10px rgba(194, 71, 15, 0.2); transition: transform 0.2s, background 0.2s;"><i class="fas fa-trash-alt"></i> Aplicar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN DE GRÁFICAS -->
+                <div class="card-premium" style="margin-top: 1.8rem;">
+                    <h3><i class="fas fa-chart-line"></i> Tendencia de Ventas (7 días)</h3>
+                    <div class="chart-container">
+                        <canvas id="salesTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="grid-2col" style="margin-top: 1.8rem;">
+                    <div class="card-premium">
+                        <h3><i class="fas fa-trophy"></i> Top 10 Productos (Generación de Ingresos)</h3>
+                        <div class="chart-container">
+                            <canvas id="paretoProductsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card-premium">
+                        <h3><i class="fas fa-chart-pie"></i> Ventas por Categoría</h3>
+                        <div class="chart-container">
+                            <canvas id="categoryPieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BITÁCORA DE AUDITORÍA -->
+                <div class="card-premium" style="margin-top: 1.8rem; border-left: 4px solid #c28a5c;">
+                    <h3><i class="fas fa-shield-halved"></i> Bitácora de Auditoría (Actividad Crítica)</h3>
+                    <p style="font-size: 0.8rem; color: #a48c76; margin-bottom: 15px;">Registro automático de cambios en inventario, ventas y seguridad.</p>
+                    <div class="table-responsive">
+                        <table style="font-size: 0.8rem;">
+                            <thead>
+                                <tr>
+                                    <th>Hora</th>
+                                    <th>Tipo</th>
+                                    <th>Evento</th>
+                                    <th>Detalles</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditLogsList"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PANEL CONFIGURACIÓN -->
+            <div id="settingsPanel" class="tab-pane">
+                <div class="card-premium">
+                    <h2><i class="fas fa-cog"></i> Configuración del Sistema</h2>
+                    <p style="color: #a48c76; margin-bottom: 30px;">Ajustes de identidad, seguridad y mantenimiento local.</p>
+
+                    <div class="grid-2col">
+                        <!-- Identidad -->
+                        <div style="background: linear-gradient(145deg, #fdfaf6, #ebd8c8); padding: 30px; border-radius: 24px; border: 1px solid #d4bea8; box-shadow: 0 4px 15px rgba(139, 106, 79, 0.08);">
+                            <h3 style="margin-bottom: 20px; color: #5c412d; font-size: 1.3rem; border-bottom: 2px solid #d4bea8; padding-bottom: 10px;"><i class="fas fa-store" style="color: #c28a5c;"></i> Identidad del Negocio</h3>
+                            <label style="font-size: 0.85rem; font-weight: bold; color: #785a42;">Nombre del Establecimiento (Para Tickets):</label>
+                            <input type="text" id="cfgBizName" placeholder="Ej. Mi Tiendita" style="margin-top: 8px; margin-bottom: 20px; width: 100%; border: 1px solid #c28a5c; background: white;">
+                            <label style="font-size: 0.85rem; font-weight: bold; color: #785a42;">Mensaje de Bienvenida (Pantalla Login):</label>
+                            <input type="text" id="cfgWelcomeText" placeholder="Ej. Bienvenido a Mi Tiendita" style="margin-top: 8px; margin-bottom: 25px; width: 100%; border: 1px solid #c28a5c; background: white;">
+                            <button id="saveBizNameBtn" class="btn-primary" style="width: 100%; padding: 12px; font-size: 1.05rem; background: #c28a5c; color: white;"><i class="fas fa-save"></i> Guardar Identidad</button>
+                        </div>
+
+                        <!-- Seguridad -->
+                        <div style="background: linear-gradient(145deg, #5c412d, #3e2b1f); color: white; padding: 30px; border-radius: 24px; box-shadow: 0 6px 20px rgba(62, 43, 31, 0.25);">
+                            <h3 style="margin-bottom: 20px; color: #ebd8c8; font-size: 1.3rem; border-bottom: 2px solid rgba(235, 216, 200, 0.2); padding-bottom: 10px;"><i class="fas fa-shield-alt" style="color: #e2b48c;"></i> Seguridad de Acceso</h3>
+                            <label style="font-size: 0.85rem; font-weight: bold; color: #e2b48c;">Usuario (Login):</label>
+                            <input type="text" id="cfgNewUsername" placeholder="Ej. admin" style="margin-top: 8px; margin-bottom: 20px; width: 100%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white;">
+                            <label style="font-size: 0.85rem; font-weight: bold; color: #e2b48c;">Nueva Contraseña:</label>
+                            <input type="password" id="cfgNewPassword" placeholder="********" style="margin-top: 8px; margin-bottom: 25px; font-size: 1.2rem; width: 100%; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white;">
+                            <button id="saveNewPinBtn" class="btn-primary" style="width: 100%; padding: 12px; font-size: 1.05rem; background: #e2b48c; color: #3e2b1f; font-weight: 800;"><i class="fas fa-lock"></i> Actualizar Credenciales</button>
+                        </div>
+
+                        <!-- Recuperación de Datos -->
+                        <div style="background: linear-gradient(to right, #8c5a35, #c28a5c); color: white; padding: 35px; border-radius: 24px; grid-column: 1 / -1; margin-top: 15px; box-shadow: 0 6px 20px rgba(194, 138, 92, 0.3);">
+                            <h3 style="margin-bottom: 15px; font-size: 1.4rem; color: #fff;"><i class="fas fa-database"></i> Mantenimiento y Recuperación</h3>
+                            <p style="font-size: 0.95rem; color: #fdfaf6; margin-bottom: 25px; opacity: 0.9;">Restaura la "Fotografía Completa" del sistema desde tu archivo de respaldo de Google Drive (.json).</p>
+                            <input type="file" id="restoreBackupInput" style="display: none;" accept=".json">
+                            <button id="restoreBackupBtn" class="btn-primary" style="background: white; color: #8c5a35; border: none; padding: 15px 30px; font-size: 1.1rem; font-weight: 800; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.2s;"><i class="fas fa-upload"></i> Restaurar Sistema Completo</button>
+                        </div>
+                    </div>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODALES -->
+    <!-- MODAL DE PRODUCTO (Mejorado) -->
+    <div id="productModal" style="display: none;" class="modal">
+        <div class="modal-card" style="max-width: 500px;">
+            <h2 id="modalTitle" style="color: var(--accent); margin-bottom: 5px;"><i class="fas fa-box-open"></i> Producto</h2>
+            <p style="font-size: 0.85rem; color: #888; margin-bottom: 25px;">Completa o modifica la información del producto.</p>
+            
+            <input type="hidden" id="editId">
+            
+            <div style="display: flex; flex-direction: column; gap: 18px;">
+                <!-- Nombre -->
+                <div>
+                    <label style="font-size: 0.85rem; font-weight: bold; color: var(--text); display: block; margin-bottom: 5px;"><i class="fas fa-tag" style="color: #c28a5c; margin-right: 5px;"></i> Nombre del Producto</label>
+                    <input type="text" id="prodName" placeholder="Ej. Aceite Vegetal 946 ml" style="width: 100%; padding: 12px; font-size: 1rem; border-radius: 8px; border: 1px solid var(--border);">
+                </div>
+
+                <!-- Categoría y Tipo -->
+                <div style="display: flex; gap: 15px;">
+                    <div style="flex: 2;">
+                        <label style="font-size: 0.85rem; font-weight: bold; color: var(--text); display: block; margin-bottom: 5px;"><i class="fas fa-folder" style="color: #c28a5c; margin-right: 5px;"></i> Categoría</label>
+                        <select id="prodCategorySelect" style="width: 100%; padding: 12px; font-size: 1rem; border-radius: 8px; border: 1px solid var(--border);"></select>
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-size: 0.85rem; font-weight: bold; color: var(--text); display: block; margin-bottom: 5px;"><i class="fas fa-balance-scale" style="color: #c28a5c; margin-right: 5px;"></i> Venta por</label>
+                        <select id="prodTypeSelect" style="width: 100%; padding: 12px; font-size: 1rem; border-radius: 8px; border: 1px solid var(--border);">
+                            <option value="unidad">Unidad (pz)</option>
+                            <option value="granel">Granel (kg/L)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Precio y Stock -->
+                <div style="display: flex; gap: 15px;">
+                    <div style="flex: 1;">
+                        <label style="font-size: 0.85rem; font-weight: bold; color: var(--text); display: block; margin-bottom: 5px;"><i class="fas fa-cubes" style="color: #c28a5c; margin-right: 5px;"></i> Stock Actual</label>
+                        <input type="number" id="prodStock" placeholder="Ej. 38" step="0.01" style="width: 100%; padding: 12px; font-size: 1.1rem; border-radius: 8px; border: 1px solid var(--border); font-weight: bold;">
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-size: 0.85rem; font-weight: bold; color: var(--text); display: block; margin-bottom: 5px;"><i class="fas fa-dollar-sign" style="color: #2a7d2e; margin-right: 5px;"></i> Precio Público</label>
+                        <input type="number" id="prodPrice" placeholder="Ej. 49.00" step="0.01" style="width: 100%; padding: 12px; font-size: 1.1rem; border-radius: 8px; border: 1px solid var(--border); font-weight: bold; color: #2a7d2e;">
+                    </div>
+                </div>
+
+                <!-- Caducidad -->
+                <div>
+                    <label style="font-size: 0.85rem; font-weight: bold; color: var(--text); display: block; margin-bottom: 5px;"><i class="fas fa-calendar-times" style="color: #c2470f; margin-right: 5px;"></i> Fecha de Caducidad (Opcional)</label>
+                    <input type="date" id="prodCaducidad" style="width: 100%; padding: 12px; font-size: 1rem; border-radius: 8px; border: 1px solid var(--border);">
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 35px;">
+                <button id="closeProductModalBtn" class="btn-soft" style="padding: 12px 25px;">Cancelar</button>
+                <button id="saveProductBtn" class="btn-primary" style="padding: 12px 25px;"><i class="fas fa-save"></i> Guardar Producto</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="notificationModal" style="display: none; z-index: 4000;" class="modal">
+        <div class="modal-card" style="text-align: center; max-width: 400px;">
+            <div id="notificationIcon" style="font-size: 3.5rem; margin-bottom: 1rem;"></div>
+            <h3 id="notificationTitle">Notificación</h3>
+            <p id="notificationMessage" style="color: #666; margin-top: 10px;"></p>
+            <button id="closeNotificationBtn" class="btn-primary" style="margin-top: 25px; width: 100%;">Aceptar</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE ENTRADA GENÉRICA -->
+    <div id="inputModal" style="display: none; z-index: 4500;" class="modal">
+        <div class="modal-card" style="max-width: 400px;">
+            <h3 id="inputModalTitle">Entrada</h3>
+            <p id="inputModalMessage" style="color: #666; margin-bottom: 15px;"></p>
+            <input type="text" id="inputModalField" style="font-size: 1.5rem; text-align: center; width: 100%; margin-bottom: 20px;">
+            <div style="display: flex; gap: 10px;">
+                <button id="inputModalCancel" class="btn-soft" style="flex: 1;">Cancelar</button>
+                <button id="inputModalConfirm" class="btn-primary" style="flex: 1;">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE TICKET -->
+    <div id="ticketModal" style="display: none; z-index: 4000;" class="modal">
+        <div class="modal-card" style="max-width: 350px; padding: 1.5rem; border-radius: 20px;">
+            <div id="ticketContent" class="ticket-print" style="font-size: 0.9rem; color: #000;">
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <h2 id="ticketBizName" style="margin:0;">ZEUS POS</h2>
+                    <p id="ticketDate" style="font-size: 0.75rem; color: #666;"></p>
+                </div>
+                <hr style="border: 0; border-top: 1px dashed #ccc; margin: 10px 0;">
+                <div id="ticketItemsList"></div>
+                <hr style="border: 0; border-top: 1px dashed #ccc; margin: 10px 0;">
+                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1rem;">
+                    <span>TOTAL:</span>
+                    <span id="ticketTotal"></span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-top: 5px;">
+                    <span>Efectivo:</span>
+                    <span id="ticketCash"></span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                    <span>Cambio:</span>
+                    <span id="ticketChange"></span>
+                </div>
+                <div style="text-align: center; margin-top: 20px; font-size: 0.8rem; color: #888;">
+                    <p>¡Gracias por su compra!</p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 25px;">
+                <button id="printTicketBtn" class="btn-primary" style="flex: 1;"><i class="fas fa-print"></i> Imprimir</button>
+                <button id="closeTicketModalBtn" class="btn-soft" style="flex: 1;">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CORTE DE CAJA -->
+    <div id="corteModal" style="display: none; z-index: 4000;" class="modal">
+        <div class="modal-card" style="max-width: 400px;">
+            <h3><i class="fas fa-file-invoice-dollar"></i> Corte de Caja</h3>
+            <p style="color: #8c7a6b; font-size: 0.85rem; margin-bottom: 20px;">Realiza el balance de efectivo del turno actual.</p>
+            
+            <div style="background: #f9f5f0; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <span>Ventas en Efectivo (Hoy):</span>
+                    <strong id="corteExpectedCash">$0.00</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #a48c76;">
+                    <span>Transacciones:</span>
+                    <span id="corteTransCount">0</span>
+                </div>
+            </div>
+
+            <label style="font-weight: bold; display: block; margin-bottom: 8px;">💰 Efectivo Físico en Caja:</label>
+            <input type="number" id="cortePhysicalCash" placeholder="0.00" style="font-size: 1.5rem; font-weight: bold; text-align: center; margin-bottom: 20px; width: 100%;">
+
+            <div id="corteResultArea" style="display: none; padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center;">
+                <span id="corteDiffLabel" style="font-size: 0.9rem;">Diferencia:</span>
+                <h2 id="corteDiffValue" style="margin: 5px 0;">$0.00</h2>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <button id="closeCorteModalBtn" class="btn-soft" style="flex: 1;">Cancelar</button>
+                <button id="saveCorteBtn" class="btn-primary" style="flex: 1;">Finalizar Corte</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE LOGIN (USUARIO/CONTRASEÑA) -->
+    <div id="loginModal" style="display: none; z-index: 5000; background: url('assets/login-bg.png') no-repeat center center/cover; position: fixed;" class="modal">
+        <!-- Overlay oscuro para que el modal resalte -->
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.65); backdrop-filter: blur(5px);"></div>
+        
+        <div class="modal-card" style="position: relative; z-index: 1; max-width: 420px; text-align: center; border-radius: 32px; background: rgba(255, 255, 255, 0.95); box-shadow: 0 25px 50px rgba(0,0,0,0.5); padding: 3rem 2.5rem;">
+            
+            <!-- Logotipo ZEUS -->
+            <div style="margin-bottom: 25px;">
+                <div style="width: 85px; height: 85px; background: linear-gradient(135deg, #c28a5c, #8c7a6b); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: white; margin: 0 auto 15px auto; box-shadow: 0 10px 20px rgba(194, 138, 92, 0.4);">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h1 style="font-size: 2.4rem; font-weight: 800; color: #2d2b26; margin: 0; letter-spacing: -1px;">ZEUS</h1>
+                <p style="color: #c28a5c; font-size: 0.8rem; font-weight: bold; letter-spacing: 2px; margin-top: -5px;">PUNTO DE VENTA</p>
+            </div>
+
+            <h2 style="margin-bottom: 5px; font-size: 1.3rem; color: #5c412d;" id="loginWelcomeTitle">Acceso Protegido</h2>
+            <p style="color: #888; font-size: 0.85rem; margin-bottom: 25px;">Ingresa tus credenciales para continuar</p>
+            
+            <div style="text-align: left;">
+                <input type="text" id="loginUsername" placeholder="Usuario" style="font-size: 1.1rem; padding: 14px 20px; margin-bottom: 15px; width: 100%; border-radius: 16px; border: 2px solid #ebd8c8; background: #fffcf8; color: #2d2b26; outline: none;">
+                <input type="password" id="loginPassword" placeholder="Contraseña" style="font-size: 1.1rem; padding: 14px 20px; margin-bottom: 20px; width: 100%; border-radius: 16px; border: 2px solid #ebd8c8; background: #fffcf8; color: #2d2b26; outline: none;">
+            </div>
+            
+            <div id="loginErrorMessage" style="color: #c2470f; font-size: 0.85rem; font-weight: bold; margin-bottom: 15px; display: none; background: #fde2cf; padding: 10px; border-radius: 8px;">Credenciales incorrectas, intente de nuevo.</div>
+            
+            <button id="loginSubmitBtn" class="btn-primary" style="width: 100%; padding: 16px; font-size: 1.2rem; font-weight: 700; border-radius: 16px; background: linear-gradient(135deg, #c28a5c, #8c7a6b); color: white; box-shadow: 0 8px 20px rgba(194, 138, 92, 0.3); border: none; cursor: pointer; transition: transform 0.2s;">Ingresar al Sistema</button>
+        </div>
+    </div>
+
+    <!-- MODAL: REPORTE CONTABLE -->
+    <div id="reportModal" style="display: none; z-index: 4000;" class="modal">
+        <div class="modal-card">
+            <h2 style="margin-bottom: 15px; color: var(--accent);"><i class="fas fa-file-invoice-dollar"></i> Reporte Contable</h2>
+            <p style="font-size: 0.9rem; color: #888; margin-bottom: 20px;">Selecciona el periodo para generar tu estado de resultados.</p>
+            
+            <label style="font-weight: bold; display: block; margin-bottom: 10px;">Periodo Contable:</label>
+            <select id="reportPeriodSelect" style="width: 100%; padding: 12px; margin-bottom: 25px; border-radius: 8px; border: 1px solid #ebd8c8; font-size: 1rem;">
+                <option value="today">Hoy</option>
+                <option value="week">Esta Semana</option>
+                <option value="month">Este Mes</option>
+                <option value="year">Este Año</option>
+                <option value="all" selected>Histórico Completo</option>
+            </select>
+            
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-soft" style="flex: 1;" onclick="document.getElementById('reportModal').style.display='none'">Cancelar</button>
+                <button id="downloadReportBtn" class="btn-primary" style="flex: 1;"><i class="fas fa-download"></i> Generar Reporte</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- INPUTS OCULTOS -->
+    <input type="file" id="excelFileInput" style="display: none;" accept=".xlsx, .xls">
+
+    <!-- ZEUS SCRIPTS - Cargados como módulo principal -->
+    <script type="module" src="js/app.js"></script>
+</body>
+
+</html>

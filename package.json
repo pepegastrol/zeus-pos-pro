@@ -1,0 +1,29 @@
+{
+  "name": "zeus-pos-pro",
+  "version": "1.0.0",
+  "description": "Zeus POS Pro Offline",
+  "main": "main.js",
+
+  "scripts": {
+    "start": "electron .",
+    "obfuscate": "node obfuscate.js",
+    "build": "electron-builder -w"
+  },
+  "build": {
+    "appId": "com.zeuspos.pro",
+    "productName": "Zeus POS Pro",
+    "win": {
+      "target": "nsis",
+      "icon": "icon.ico"
+    }
+  },
+  "keywords": [],
+  "author": "Zeus POS",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "electron": "^42.0.0",
+    "electron-builder": "^26.8.1",
+    "javascript-obfuscator": "^5.4.2"
+  }
+}
