@@ -55,6 +55,7 @@ function createWindow() {
 
     // Ocultar la ventana hasta que esté lista para mostrarse
     mainWindow.once('ready-to-show', () => {
+        mainWindow.maximize();
         mainWindow.show();
     });
 }
