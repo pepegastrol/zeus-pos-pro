@@ -96,10 +96,24 @@ export function getMachineId() {
 }
 
 export function validateLicense(hwid, licenseInput) {
-    if (!licenseInput || !licenseInput.includes('-')) return { isValid: false, isExpired: false, expDateStr: "" };
+    if (!licenseInput) return { isValid: false, isExpired: false, expDateStr: "" };
+    
+    let input = licenseInput.trim().toUpperCase().replace(/\s+/g, '');
+    
+    // Auto-formatear con guiones si el usuario los omitió
+    if (!input.includes('-')) {
+        if (input.startsWith('PERM') && input.length === 19) {
+            input = `${input.substring(0,4)}-${input.substring(4,9)}-${input.substring(9,14)}-${input.substring(14,19)}`;
+        } else if (input.length === 21) {
+            // Formato YYMMDD (6) + 15 caracteres = 21
+            input = `${input.substring(0,6)}-${input.substring(6,11)}-${input.substring(11,16)}-${input.substring(16,21)}`;
+        }
+    }
+
+    if (!input.includes('-')) return { isValid: false, isExpired: false, expDateStr: "" };
     
     // Formato esperado: PREFIJO-XXXXX-XXXXX-XXXXX
-    const parts = licenseInput.split('-');
+    const parts = input.split('-');
     const prefix = parts[0];
     
     // Reconstruir la firma esperada
