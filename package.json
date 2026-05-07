@@ -1,6 +1,6 @@
 {
   "name": "zeus-pos-pro",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Zeus POS Pro Offline",
   "main": "main.js",
   "scripts": {
@@ -12,6 +12,9 @@
   "build": {
     "appId": "com.zeuspos.pro",
     "productName": "Zeus POS Pro",
+    "directories": {
+      "output": "build_final"
+    },
     "publish": [
       {
         "provider": "github",
@@ -20,8 +23,7 @@
       }
     ],
     "win": {
-      "target": "nsis",
-      "icon": "icon.ico"
+      "target": "nsis"
     }
   },
   "keywords": [],
