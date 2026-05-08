@@ -105,10 +105,12 @@ app.whenReady().then(() => {
 
     createWindow();
 
-    // Iniciar radar de actualizaciones si la app está compilada (.exe)
-    if (app.isPackaged) {
-        autoUpdater.checkForUpdates();
-    }
+    // Iniciar radar de actualizaciones manualmente vía IPC cuando el frontend esté listo
+    ipcMain.on('check-for-updates', () => {
+        if (app.isPackaged) {
+            autoUpdater.checkForUpdates();
+        }
+    });
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {

@@ -106,6 +106,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     });
                 }
             });
+
+            // Una vez que los listeners están listos, pedimos a main.js que busque actualizaciones
+            ipcRenderer.send('check-for-updates');
         }
 
     } catch (err) {
