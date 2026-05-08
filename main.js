@@ -98,10 +98,11 @@ function createWindow() {
     });
 }
 
+// Falsificar el User-Agent GLOBALMENTE antes de que inicie la app para evitar el bloqueo de Google (Insecure Browser)
+app.userAgentFallback = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+
 // Inicializar la app
 app.whenReady().then(() => {
-    // Falsificar el User-Agent para engañar a Google y evitar el bloqueo Error 400 (OAuth)
-    app.userAgentFallback = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
     createWindow();
 
@@ -116,6 +117,26 @@ app.whenReady().then(() => {
         if (BrowserWindow.getAllWindows().length === 0) {
             createWindow();
         }
+    });
+});
+
+// Interceptar la creación de ventanas emergentes (como el popup de Google Auth)
+// para forzar que parezcan ventanas de Chrome normales y evitar el bloqueo.
+app.on('web-contents-created', (event, contents) => {
+    contents.setWindowOpenHandler(({ url }) => {
+        if (url.includes('accounts.google.com')) {
+            return {
+                action: 'allow',
+                overrideBrowserWindowOptions: {
+                    webPreferences: {
+                        nodeIntegration: false,
+                        contextIsolation: true,
+                        enableRemoteModule: false
+                    }
+                }
+            };
+        }
+        return { action: 'allow' };
     });
 });
 
