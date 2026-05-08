@@ -15,26 +15,27 @@ export async function initGoogleDrive() {
 }
 
 /**
- * Abre la ventana de Google para que el usuario "meta sus datos".
+ * Abre la ventana de Google para que el usuario "meta sus datos" usando el navegador predeterminado.
  */
 export function connectGoogleDrive() {
-    const client_id = "879480744232-f39a9gr3uqitbos8ubgvvagfumoo2rc9.apps.googleusercontent.com";
+    if (!window.require) {
+        showNotification("Error", "El entorno seguro no está disponible.");
+        return;
+    }
+
+    const { ipcRenderer } = window.require('electron');
     
-    if (!window.google) return;
+    // Enviar instrucción al main.js para abrir el navegador del sistema
+    ipcRenderer.send('start-google-auth');
 
-    tokenClient = window.google.accounts.oauth2.initTokenClient({
-        client_id: client_id,
-        scope: 'https://www.googleapis.com/auth/drive.file',
-        callback: async (response) => {
-            if (response.error) return;
-            accessToken = response.access_token;
-            await setConfig("googleToken", accessToken);
-            showNotification("Conectado", "ZEUS ya tiene acceso a tu Google Drive.");
-            autoBackupToCloud();
-        },
+    // Escuchar la respuesta exitosa con el token
+    ipcRenderer.once('google-auth-success', async (event, token) => {
+        if (!token) return;
+        accessToken = token;
+        await setConfig("googleToken", accessToken);
+        showNotification("Conectado", "ZEUS ya tiene acceso a tu Google Drive.");
+        autoBackupToCloud();
     });
-
-    tokenClient.requestAccessToken({ prompt: 'consent' });
 }
 
 /**
