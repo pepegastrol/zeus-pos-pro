@@ -62,6 +62,9 @@ function createWindow() {
 
 // Inicializar la app
 app.whenReady().then(() => {
+    // Falsificar el User-Agent para engañar a Google y evitar el bloqueo Error 400 (OAuth)
+    app.userAgentFallback = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+
     createWindow();
 
     // Iniciar radar de actualizaciones si la app está compilada (.exe)
