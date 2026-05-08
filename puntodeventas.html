@@ -294,45 +294,47 @@
 
                     <div class="grid-2col">
                         <!-- Identidad -->
-                        <div style="background: linear-gradient(145deg, #2d2b26, #1e1d1a); padding: 30px; border-radius: 24px; border: 1px solid rgba(194, 138, 92, 0.15); box-shadow: 0 8px 25px rgba(0,0,0,0.15); color: white; display: flex; flex-direction: column;">
-                            <h3 style="margin-bottom: 20px; color: #ebd8c8; font-size: 1.3rem; border-bottom: 1px solid rgba(194, 138, 92, 0.2); padding-bottom: 15px;"><i class="fas fa-store" style="color: #c28a5c;"></i> Identidad del Negocio</h3>
+                        <div style="background: #ffffff; padding: 30px; border-radius: 24px; border: 1px solid #e8dfd6; box-shadow: 0 8px 30px rgba(139, 106, 79, 0.08); display: flex; flex-direction: column;">
+                            <h3 style="margin-bottom: 20px; color: #5c412d; font-size: 1.3rem; border-bottom: 2px solid #fdfaf6; padding-bottom: 15px;"><i class="fas fa-store" style="color: #c28a5c;"></i> Identidad del Negocio</h3>
                             <div style="flex: 1;">
-                                <label style="font-size: 0.85rem; font-weight: bold; color: #a48c76;">Nombre del Establecimiento (Para Tickets):</label>
-                                <input type="text" id="cfgBizName" placeholder="Ej. Mi Tiendita" style="margin-top: 8px; margin-bottom: 20px; width: 100%; border: 1px solid rgba(194, 138, 92, 0.3); background: rgba(0,0,0,0.2); color: white; padding: 12px; border-radius: 10px; outline: none;">
-                                <label style="font-size: 0.85rem; font-weight: bold; color: #a48c76;">Mensaje de Bienvenida (Pantalla Login):</label>
-                                <input type="text" id="cfgWelcomeText" placeholder="Ej. Bienvenido a Mi Tiendita" style="margin-top: 8px; margin-bottom: 25px; width: 100%; border: 1px solid rgba(194, 138, 92, 0.3); background: rgba(0,0,0,0.2); color: white; padding: 12px; border-radius: 10px; outline: none;">
+                                <label style="font-size: 0.85rem; font-weight: bold; color: #8c5a35;">Nombre del Establecimiento (Para Tickets):</label>
+                                <input type="text" id="cfgBizName" placeholder="Ej. Mi Tiendita" style="margin-top: 8px; margin-bottom: 20px; width: 100%; border: 1px solid #d4bea8; background: #fdfaf6; color: #3e2b1f; padding: 12px; border-radius: 12px; outline: none; transition: border 0.3s;">
+                                <label style="font-size: 0.85rem; font-weight: bold; color: #8c5a35;">Mensaje de Bienvenida (Pantalla Login):</label>
+                                <input type="text" id="cfgWelcomeText" placeholder="Ej. Bienvenido a Mi Tiendita" style="margin-top: 8px; margin-bottom: 25px; width: 100%; border: 1px solid #d4bea8; background: #fdfaf6; color: #3e2b1f; padding: 12px; border-radius: 12px; outline: none; transition: border 0.3s;">
                             </div>
-                            <button id="saveBizNameBtn" class="btn-primary" style="width: 100%; padding: 14px; font-size: 1.05rem; background: linear-gradient(135deg, #c28a5c, #8c5a35); border: none; box-shadow: 0 4px 15px rgba(194, 138, 92, 0.2);"><i class="fas fa-save"></i> Guardar Identidad</button>
+                            <button id="saveBizNameBtn" class="btn-primary" style="width: 100%; padding: 14px; font-size: 1.05rem; background: linear-gradient(135deg, #c28a5c, #8c5a35); border: none; box-shadow: 0 4px 15px rgba(194, 138, 92, 0.2); border-radius: 12px;"><i class="fas fa-save"></i> Guardar Identidad</button>
                         </div>
 
                         <!-- Seguridad -->
-                        <div style="background: linear-gradient(145deg, #2d2b26, #1e1d1a); padding: 30px; border-radius: 24px; border: 1px solid rgba(194, 138, 92, 0.15); box-shadow: 0 8px 25px rgba(0,0,0,0.15); color: white; display: flex; flex-direction: column;">
-                            <h3 style="margin-bottom: 20px; color: #ebd8c8; font-size: 1.3rem; border-bottom: 1px solid rgba(194, 138, 92, 0.2); padding-bottom: 15px;"><i class="fas fa-shield-alt" style="color: #c28a5c;"></i> Seguridad de Acceso</h3>
+                        <div style="background: #ffffff; padding: 30px; border-radius: 24px; border: 1px solid #e8dfd6; box-shadow: 0 8px 30px rgba(139, 106, 79, 0.08); display: flex; flex-direction: column;">
+                            <h3 style="margin-bottom: 20px; color: #5c412d; font-size: 1.3rem; border-bottom: 2px solid #fdfaf6; padding-bottom: 15px;"><i class="fas fa-shield-alt" style="color: #c28a5c;"></i> Seguridad de Acceso</h3>
                             <div style="flex: 1;">
-                                <label style="font-size: 0.85rem; font-weight: bold; color: #a48c76;">Usuario (Login):</label>
-                                <input type="text" id="cfgNewUsername" placeholder="Ej. admin" style="margin-top: 8px; margin-bottom: 20px; width: 100%; border: 1px solid rgba(194, 138, 92, 0.3); background: rgba(0,0,0,0.2); color: white; padding: 12px; border-radius: 10px; outline: none;">
-                                <label style="font-size: 0.85rem; font-weight: bold; color: #a48c76;">Nueva Contraseña:</label>
-                                <input type="password" id="cfgNewPassword" placeholder="********" style="margin-top: 8px; margin-bottom: 25px; font-size: 1.2rem; width: 100%; border: 1px solid rgba(194, 138, 92, 0.3); background: rgba(0,0,0,0.2); color: white; padding: 12px; border-radius: 10px; outline: none; letter-spacing: 2px;">
+                                <label style="font-size: 0.85rem; font-weight: bold; color: #8c5a35;">Usuario (Login):</label>
+                                <input type="text" id="cfgNewUsername" placeholder="Ej. admin" style="margin-top: 8px; margin-bottom: 20px; width: 100%; border: 1px solid #d4bea8; background: #fdfaf6; color: #3e2b1f; padding: 12px; border-radius: 12px; outline: none; transition: border 0.3s;">
+                                <label style="font-size: 0.85rem; font-weight: bold; color: #8c5a35;">Nueva Contraseña:</label>
+                                <input type="password" id="cfgNewPassword" placeholder="********" style="margin-top: 8px; margin-bottom: 25px; font-size: 1.2rem; width: 100%; border: 1px solid #d4bea8; background: #fdfaf6; color: #3e2b1f; padding: 12px; border-radius: 12px; outline: none; letter-spacing: 2px; transition: border 0.3s;">
                             </div>
-                            <button id="saveNewPinBtn" class="btn-primary" style="width: 100%; padding: 14px; font-size: 1.05rem; background: linear-gradient(135deg, #5c412d, #3e2b1f); border: 1px solid rgba(194, 138, 92, 0.3); box-shadow: 0 4px 15px rgba(0,0,0,0.2);"><i class="fas fa-lock"></i> Actualizar Credenciales</button>
+                            <button id="saveNewPinBtn" class="btn-primary" style="width: 100%; padding: 14px; font-size: 1.05rem; background: linear-gradient(135deg, #5c412d, #3e2b1f); border: none; box-shadow: 0 4px 15px rgba(62, 43, 31, 0.2); border-radius: 12px;"><i class="fas fa-lock"></i> Actualizar Credenciales</button>
                         </div>
 
                         <!-- Recuperación de Datos -->
-                        <div style="background: linear-gradient(145deg, #2d2b26, #1e1d1a); color: white; padding: 30px; border-radius: 24px; border: 1px solid rgba(194, 138, 92, 0.15); box-shadow: 0 8px 25px rgba(0,0,0,0.15); grid-column: 1 / -1; margin-top: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;">
-                            <div style="flex: 1; min-width: 300px;">
-                                <h3 style="margin-bottom: 10px; font-size: 1.4rem; color: #ebd8c8;"><i class="fas fa-database" style="color: #c28a5c;"></i> Mantenimiento y Recuperación</h3>
-                                <p style="font-size: 0.95rem; color: #a48c76; margin: 0;">Restaura la "Fotografía Completa" del sistema desde tu archivo de respaldo local o de Google Drive (.json).</p>
+                        <div style="background: linear-gradient(145deg, #fffcf9, #fdfaf6); padding: 30px; border-radius: 24px; border: 1px solid #e8dfd6; box-shadow: 0 8px 30px rgba(139, 106, 79, 0.08); grid-column: 1 / -1; margin-top: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; position: relative; overflow: hidden;">
+                            <div style="position: absolute; top: -20px; right: 20px; font-size: 8rem; color: rgba(194, 138, 92, 0.05); pointer-events: none;"><i class="fas fa-database"></i></div>
+                            <div style="flex: 1; min-width: 300px; position: relative; z-index: 1;">
+                                <h3 style="margin-bottom: 10px; font-size: 1.4rem; color: #5c412d;"><i class="fas fa-database" style="color: #c28a5c; margin-right: 8px;"></i> Mantenimiento y Recuperación</h3>
+                                <p style="font-size: 0.95rem; color: #785a42; margin: 0;">Restaura la "Fotografía Completa" del sistema desde tu archivo de respaldo local o de Google Drive (.json).</p>
                             </div>
                             <input type="file" id="restoreBackupInput" style="display: none;" accept=".json">
-                            <button id="restoreBackupBtn" class="btn-primary" style="background: rgba(194, 138, 92, 0.1); color: #ebd8c8; border: 1px solid rgba(194, 138, 92, 0.5); padding: 15px 30px; font-size: 1.1rem; font-weight: bold; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s;"><i class="fas fa-upload" style="color: #c28a5c;"></i> Restaurar Sistema</button>
+                            <button id="restoreBackupBtn" class="btn-primary" style="background: #ffffff; color: #8c5a35; border: 2px solid #e8dfd6; padding: 15px 30px; font-size: 1.1rem; font-weight: bold; border-radius: 14px; box-shadow: 0 4px 15px rgba(139, 106, 79, 0.08); transition: all 0.3s; position: relative; z-index: 1;"><i class="fas fa-upload" style="color: #c28a5c;"></i> Restaurar Sistema</button>
                         </div>
 
                         <!-- Actualizaciones OTA -->
-                        <div style="background: linear-gradient(145deg, #2d2b26, #1e1d1a); color: white; padding: 30px; border-radius: 24px; border: 1px solid rgba(194, 138, 92, 0.15); box-shadow: 0 8px 25px rgba(0,0,0,0.15); grid-column: 1 / -1; margin-top: 10px;">
-                            <h3 style="margin-bottom: 10px; font-size: 1.4rem; color: #ebd8c8;"><i class="fas fa-cloud-download-alt" style="color: #c28a5c;"></i> Central de Actualizaciones</h3>
-                            <p style="font-size: 0.95rem; color: #a48c76; margin-bottom: 25px;">Mantén tu ZEUS POS siempre al día con las últimas funciones y parches de seguridad.</p>
+                        <div style="background: linear-gradient(145deg, #2d2b26, #1e1d1a); color: white; padding: 30px; border-radius: 24px; border: 1px solid rgba(194, 138, 92, 0.15); box-shadow: 0 8px 30px rgba(0,0,0,0.2); grid-column: 1 / -1; margin-top: 10px; position: relative; overflow: hidden;">
+                            <div style="position: absolute; top: -10px; right: 20px; font-size: 8rem; color: rgba(255, 255, 255, 0.03); pointer-events: none;"><i class="fas fa-cloud-download-alt"></i></div>
+                            <h3 style="margin-bottom: 10px; font-size: 1.4rem; color: #ebd8c8; position: relative; z-index: 1;"><i class="fas fa-rocket" style="color: #c28a5c; margin-right: 8px;"></i> Central de Actualizaciones</h3>
+                            <p style="font-size: 0.95rem; color: #a48c76; margin-bottom: 25px; position: relative; z-index: 1;">Mantén tu ZEUS POS siempre al día con las últimas funciones y parches de seguridad.</p>
                             
-                            <div id="otaStatusContainer" style="background: rgba(0,0,0,0.2); padding: 25px; border-radius: 16px; border: 1px solid rgba(194, 138, 92, 0.2); display: flex; flex-direction: column; gap: 15px;">
+                            <div id="otaStatusContainer" style="background: rgba(0,0,0,0.25); padding: 25px; border-radius: 18px; border: 1px solid rgba(194, 138, 92, 0.15); display: flex; flex-direction: column; gap: 15px; position: relative; z-index: 1;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
                                     <div>
                                         <h4 id="otaStatusText" style="margin: 0; font-size: 1.2rem; color: #fff;"><i class="fas fa-check-circle" style="color: #2a7d2e; margin-right: 8px;"></i> Sistema Actualizado</h4>
@@ -349,7 +351,7 @@
                                         <span>Descargando parche de actualización...</span>
                                         <span id="otaProgressText">0%</span>
                                     </div>
-                                    <div style="width: 100%; background: rgba(0,0,0,0.4); border-radius: 12px; height: 14px; overflow: hidden; border: 1px solid rgba(194, 138, 92, 0.2);">
+                                    <div style="width: 100%; background: rgba(0,0,0,0.5); border-radius: 12px; height: 14px; overflow: hidden; border: 1px solid rgba(194, 138, 92, 0.2);">
                                         <div id="otaProgressBar" style="width: 0%; height: 100%; background: linear-gradient(to right, #8c5a35, #c28a5c); transition: width 0.3s ease; box-shadow: 0 0 15px rgba(194, 138, 92, 0.6);"></div>
                                     </div>
                                 </div>
