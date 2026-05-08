@@ -44,20 +44,54 @@ function createWindow() {
         height: 800,
         minWidth: 1024,
         minHeight: 768,
-        icon: path.join(__dirname, 'icon.ico'), // Opcional: añade un ícono luego
+        icon: path.join(__dirname, 'icon.ico'),
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false
         }
     });
 
-    // Quitar el menú por defecto (Archivo, Edición, etc.) para que parezca una app nativa
+    // Quitar el menú por defecto
     Menu.setApplicationMenu(null);
 
-    // Cargar el archivo HTML principal
-    mainWindow.loadFile('puntodeventas.html');
+    // Arrancar un mini servidor web interno para evitar el error origin=file:// de Google
+    const http = require('http');
+    const fs = require('fs');
 
-    // Ocultar la ventana hasta que esté lista para mostrarse
+    const server = http.createServer((req, res) => {
+        let urlPath = req.url.split('?')[0];
+        if (urlPath === '/') urlPath = '/puntodeventas.html';
+        
+        let filePath = path.normalize(path.join(__dirname, urlPath));
+        if (!filePath.startsWith(__dirname)) {
+            res.writeHead(403); return res.end('Forbidden');
+        }
+
+        let extname = path.extname(filePath);
+        let contentType = 'text/html';
+        const mimeTypes = {
+            '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json',
+            '.png': 'image/png', '.jpg': 'image/jpg', '.ico': 'image/x-icon',
+            '.svg': 'image/svg+xml', '.woff': 'font/woff', '.woff2': 'font/woff2'
+        };
+        if (mimeTypes[extname]) contentType = mimeTypes[extname];
+
+        fs.readFile(filePath, (error, content) => {
+            if (error) { 
+                res.writeHead(404); res.end('Not found'); 
+            } else { 
+                res.writeHead(200, { 'Content-Type': contentType }); 
+                res.end(content, 'utf-8'); 
+            }
+        });
+    });
+
+    // Escuchar en el puerto 8080 de forma local
+    server.listen(8080, '127.0.0.1', () => {
+        // Cargar el sistema desde el servidor interno (localhost) en lugar de file://
+        mainWindow.loadURL('http://localhost:8080');
+    });
+
     mainWindow.once('ready-to-show', () => {
         mainWindow.maximize();
         mainWindow.show();
