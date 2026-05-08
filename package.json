@@ -1,6 +1,6 @@
 {
   "name": "zeus-pos-pro",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Zeus POS Pro Offline",
   "main": "main.js",
   "scripts": {
