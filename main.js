@@ -1,41 +1,45 @@
-const { app, BrowserWindow, Menu, dialog } = require('electron');
+const { app, BrowserWindow, Menu, dialog, ipcMain } = require('electron');
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
 
-// Configuración del Auto Updater
-autoUpdater.autoDownload = true;
+let mainWindow;
+
+// Configuración del Auto Updater (Descarga Manual Controlada por UI)
+autoUpdater.autoDownload = false;
 autoUpdater.autoInstallOnAppQuit = true;
 
-// Eventos de Actualización
-autoUpdater.on('update-available', () => {
-    dialog.showMessageBox({
-        type: 'info',
-        title: '🌟 Actualización ZEUS',
-        message: 'Se ha detectado una nueva versión en la nube. Se descargará en segundo plano automáticamente para no interrumpir tus ventas.',
-        buttons: ['Excelente']
-    });
+// Eventos de Actualización conectados con el Frontend
+autoUpdater.on('update-available', (info) => {
+    if(mainWindow) mainWindow.webContents.send('update-available', info);
 });
 
-autoUpdater.on('update-downloaded', () => {
-    dialog.showMessageBox({
-        type: 'info',
-        title: '✅ Actualización Lista',
-        message: 'La nueva versión se descargó con éxito. ¿Deseas reiniciar ZEUS ahora para aplicar los cambios o prefieres esperar a que cierres tu turno?',
-        buttons: ['Reiniciar y Actualizar Ahora', 'Más tarde']
-    }).then((result) => {
-        if (result.response === 0) {
-            autoUpdater.quitAndInstall();
-        }
-    });
+autoUpdater.on('update-not-available', (info) => {
+    if(mainWindow) mainWindow.webContents.send('update-not-available', info);
+});
+
+autoUpdater.on('download-progress', (progressObj) => {
+    if(mainWindow) mainWindow.webContents.send('download-progress', progressObj);
+});
+
+autoUpdater.on('update-downloaded', (info) => {
+    if(mainWindow) mainWindow.webContents.send('update-downloaded', info);
 });
 
 autoUpdater.on('error', (err) => {
     console.error('Error de actualización:', err);
 });
 
+ipcMain.on('start-download', () => {
+    autoUpdater.downloadUpdate();
+});
+
+ipcMain.on('install-update', () => {
+    autoUpdater.quitAndInstall();
+});
+
 function createWindow() {
     // Crear la ventana del navegador.
-    const mainWindow = new BrowserWindow({
+    mainWindow = new BrowserWindow({
         width: 1280,
         height: 800,
         minWidth: 1024,

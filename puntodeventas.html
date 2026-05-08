@@ -320,6 +320,35 @@
                             <input type="file" id="restoreBackupInput" style="display: none;" accept=".json">
                             <button id="restoreBackupBtn" class="btn-primary" style="background: white; color: #8c5a35; border: none; padding: 15px 30px; font-size: 1.1rem; font-weight: 800; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.2s;"><i class="fas fa-upload"></i> Restaurar Sistema Completo</button>
                         </div>
+
+                        <!-- Actualizaciones OTA -->
+                        <div style="background: linear-gradient(145deg, #1e1d1a, #2d2b26); color: white; padding: 30px; border-radius: 24px; box-shadow: 0 6px 20px rgba(0,0,0,0.25); grid-column: 1 / -1; margin-top: 15px; border-left: 4px solid #c28a5c;">
+                            <h3 style="margin-bottom: 15px; font-size: 1.4rem; color: #ebd8c8;"><i class="fas fa-cloud-download-alt" style="color: #c28a5c;"></i> Central de Actualizaciones</h3>
+                            <p style="font-size: 0.95rem; color: #a48c76; margin-bottom: 20px;">Mantén tu ZEUS POS siempre al día con las últimas funciones y parches de seguridad.</p>
+                            
+                            <div id="otaStatusContainer" style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 16px; border: 1px solid rgba(194, 138, 92, 0.3); display: flex; flex-direction: column; gap: 15px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                                    <div>
+                                        <h4 id="otaStatusText" style="margin: 0; font-size: 1.2rem; color: #fff;"><i class="fas fa-spinner fa-spin" style="color: #c28a5c; margin-right: 8px;"></i> Buscando actualizaciones...</h4>
+                                        <p id="otaStatusSubtext" style="margin: 5px 0 0 0; font-size: 0.85rem; color: #a48c76;">Comprobando conexión con la nube...</p>
+                                    </div>
+                                    <div id="otaActionBtnContainer">
+                                        <!-- Botones dinámicos se inyectarán vía JS -->
+                                    </div>
+                                </div>
+                                
+                                <!-- Progress Bar -->
+                                <div id="otaProgressContainer" style="display: none; width: 100%; margin-top: 10px;">
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: bold; margin-bottom: 8px; color: #e2b48c;">
+                                        <span>Descargando parche de actualización...</span>
+                                        <span id="otaProgressText">0%</span>
+                                    </div>
+                                    <div style="width: 100%; background: rgba(0,0,0,0.5); border-radius: 10px; height: 12px; overflow: hidden;">
+                                        <div id="otaProgressBar" style="width: 0%; height: 100%; background: linear-gradient(to right, #c28a5c, #ebd8c8); transition: width 0.3s ease; box-shadow: 0 0 10px rgba(194, 138, 92, 0.8);"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     </div>

@@ -57,6 +57,57 @@ document.addEventListener('DOMContentLoaded', async () => {
         initInactivityTimer();
         autoBackupToCloud(); // Intento de respaldo inicial
 
+        // --- OTA Updates UI ---
+        if (window.require) {
+            const { ipcRenderer } = window.require('electron');
+            
+            const otaStatusText = document.getElementById('otaStatusText');
+            const otaStatusSubtext = document.getElementById('otaStatusSubtext');
+            const otaActionBtnContainer = document.getElementById('otaActionBtnContainer');
+            const otaProgressContainer = document.getElementById('otaProgressContainer');
+            const otaProgressBar = document.getElementById('otaProgressBar');
+            const otaProgressText = document.getElementById('otaProgressText');
+
+            ipcRenderer.on('update-not-available', () => {
+                if(otaStatusText) otaStatusText.innerHTML = '<i class="fas fa-check-circle" style="color: #2a7d2e; margin-right: 8px;"></i> Sistema Actualizado';
+                if(otaStatusSubtext) otaStatusSubtext.innerText = 'Cuentas con la última versión de ZEUS POS.';
+                if(otaActionBtnContainer) otaActionBtnContainer.innerHTML = '';
+            });
+
+            ipcRenderer.on('update-available', (event, info) => {
+                if(otaStatusText) otaStatusText.innerHTML = '<i class="fas fa-bell" style="color: #c28a5c; margin-right: 8px;"></i> Se requiere Nueva Actualización';
+                if(otaStatusSubtext) otaStatusSubtext.innerText = 'Una nueva versión con mejoras está lista para instalarse.';
+                if(otaActionBtnContainer) {
+                    otaActionBtnContainer.innerHTML = '<button id="btnOtaDownload" class="btn-primary" style="background: linear-gradient(135deg, #c28a5c, #8c5a35); padding: 10px 20px;"><i class="fas fa-download"></i> Actualizar</button>';
+                    document.getElementById('btnOtaDownload').addEventListener('click', () => {
+                        ipcRenderer.send('start-download');
+                        otaActionBtnContainer.innerHTML = '';
+                        otaStatusText.innerHTML = '<i class="fas fa-spinner fa-spin" style="color: #c28a5c; margin-right: 8px;"></i> Descargando...';
+                        otaStatusSubtext.innerText = 'Por favor, no cierres el sistema.';
+                        otaProgressContainer.style.display = 'block';
+                    });
+                }
+            });
+
+            ipcRenderer.on('download-progress', (event, progressObj) => {
+                const percent = Math.round(progressObj.percent);
+                if(otaProgressBar) otaProgressBar.style.width = percent + '%';
+                if(otaProgressText) otaProgressText.innerText = percent + '%';
+            });
+
+            ipcRenderer.on('update-downloaded', (event, info) => {
+                if(otaProgressContainer) otaProgressContainer.style.display = 'none';
+                if(otaStatusText) otaStatusText.innerHTML = '<i class="fas fa-check-circle" style="color: #2a7d2e; margin-right: 8px;"></i> Sistema Actualizado';
+                if(otaStatusSubtext) otaStatusSubtext.innerText = `Versión ${info.version || 'Nueva'} descargada con éxito. Reinicia el sistema para aplicar los cambios.`;
+                if(otaActionBtnContainer) {
+                    otaActionBtnContainer.innerHTML = '<button id="btnOtaInstall" class="btn-primary" style="background: #2a7d2e;"><i class="fas fa-power-off"></i> Reiniciar Ahora</button>';
+                    document.getElementById('btnOtaInstall').addEventListener('click', () => {
+                        ipcRenderer.send('install-update');
+                    });
+                }
+            });
+        }
+
     } catch (err) {
         console.error("Falla en inicialización:", err);
     }
